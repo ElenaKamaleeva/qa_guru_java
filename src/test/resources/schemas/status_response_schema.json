@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/Welcome5",
+  "definitions": {
+    "Welcome5": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "total": { "type": "integer" },
+        "used": { "type": "integer" },
+        "queued": { "type": "integer" },
+        "pending": { "type": "integer" },
+        "warmReady": { "type": "integer" },
+        "warmTotal": { "type": "integer" },
+        "browsers": { "$ref": "#/definitions/Browsers" }
+      },
+      "required": [
+        "browsers",
+        "pending",
+        "queued",
+        "total",
+        "used",
+        "warmReady",
+        "warmTotal"
+      ],
+      "title": "Welcome5"
+    },
+    "Browsers": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Chrome"
+      },
+      "properties": {
+        "chrome": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/Chrome"
+          }
+        },
+        "firefox": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/Chrome"
+          }
+        }
+      },
+      "required": [
+        "chrome",
+        "firefox"
+      ],
+      "title": "Browsers"
+    },
+    "Chrome": {
+      "type": "object",
+      "title": "Chrome"
+    }
+  }
+}
