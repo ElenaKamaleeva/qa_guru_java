@@ -1,0 +1,20 @@
+{
+  "base": {
+    "project": "Some project name",
+    "environment": "qa.guru",
+    "comment": "",
+    "reportLink": "https://jenkins.autotests.cloud/view/java_students/job/tlg_bot_build/2/allure/",
+    "language": "en",
+    "allureFolder": "",
+    "enableChart": true,
+    "enableSuitesPublishing": false,
+    "customData": {}
+  },
+  "telegram": {
+    "token": "8857463619:AAFMBxNt1TE3spa8Szm4VsfHmWdZH-HK_hs",
+    "chat": "-1004293305644",
+    "topic": "",
+    "replyTo": "",
+    "templatePath": "/templates/telegram.ftl"
+  }
+}
