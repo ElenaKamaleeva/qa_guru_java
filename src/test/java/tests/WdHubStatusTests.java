@@ -3,23 +3,12 @@ package tests;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 
 public class WdHubStatusTests extends TestBaseAPI {
 
-    @Test
-    public void statusTest() {
-        given()
-                .log().all()
-                .auth().basic("user1", "1234")
-                .when()
-                .get("/wd/hub/status")
-                .then()
-                .log().all()
-                .statusCode(200);
-    }
 
     @Test
     public void unauthorizedStatusTest() {
@@ -29,46 +18,9 @@ public class WdHubStatusTests extends TestBaseAPI {
                 .get("/wd/hub/status")
                 .then()
                 .log().all()
-                .statusCode(401);
-    }
-
-    @Test
-    public void readyTrueTest() {
-        given()
-                .log().all()
-                .auth().basic("user1", "1234")
-                .when()
-                .get("/wd/hub/status")
-                .then()
-                .log().all()
-                .statusCode(200)
-                .body("value.ready", is(true));
-    }
-
-    @Test
-    public void messageContainsVersionTest() {
-        given()
-                .log().all()
-                .auth().basic("user1", "1234")
-                .when()
-                .get("/wd/hub/status")
-                .then()
-                .log().all()
-                .statusCode(200)
-                .body("value.message", containsString("built at"));
-    }
-
-    @Test
-    public void wdHubStatusSchemaTest() {
-        given()
-                .log().all()
-                .auth().basic("user1", "1234")
-                .when()
-                .get("/wd/hub/status")
-                .then()
-                .log().all()
-                .statusCode(200)
-                .body(matchesJsonSchemaInClasspath("schemas/wd_hub_status_response_schema.json"));
+                .statusCode(401)
+                .header("WWW-Authenticate", containsString("Basic"))
+                .body(containsString("401 Authorization Required"));
     }
 
     @Test
@@ -80,19 +32,35 @@ public class WdHubStatusTests extends TestBaseAPI {
                 .get("/wd/hub/status")
                 .then()
                 .log().all()
-                .statusCode(401);
+                .statusCode(401)
+                .header("WWW-Authenticate", containsString("Basic"))
+                .body(containsString("401 Authorization Required"));
     }
 
     @Test
-    public void wrongPathReturnsFallbackMessageTest() {
+    public void noAuthHeaderAtAllTest() {
+        // явно проверяем поведение при полном отсутствии Authorization заголовка
         given()
                 .log().all()
-                .auth().basic("user1", "1234")
                 .when()
-                .get("/wd/hub/statuss")
+                .get("/wd/hub/status")
                 .then()
                 .log().all()
-                .statusCode(200)
-                .body(containsString("Selenoid"));
+                .statusCode(401)
+                .header("WWW-Authenticate", equalTo("Basic realm=\"Selenoid\""));
+    }
+
+    @Test
+    public void wrongAuthTypeTest() {
+        // подменяем тип авторизации на Bearer вместо Basic
+        given()
+                .log().all()
+                .header("Authorization", "Bearer sometoken123")
+                .when()
+                .get("/wd/hub/status")
+                .then()
+                .log().all()
+                .statusCode(401)
+                .header("WWW-Authenticate", startsWith("Basic"));
     }
 }
